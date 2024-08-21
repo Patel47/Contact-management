@@ -26,7 +26,7 @@ const Navbar = () => {
         </div>
       </div>
       <div className="bg-cyan-400 p-4 flex flex-col items-center">
-        <div>
+        <div className="">
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
@@ -46,7 +46,7 @@ const Navbar = () => {
                 <DropdownMenuItem>
                   {theme == "light" ? (
                     <div
-                      className="flex items-center"
+                      className="flex items-center w-full"
                       onClick={() => setTheme("dark")}
                     >
                       <Moon className="mr-2 h-4 w-4" />
@@ -54,7 +54,7 @@ const Navbar = () => {
                     </div>
                   ) : (
                     <div
-                      className="flex items-center"
+                      className="flex items-center w-full"
                       onClick={() => setTheme("light")}
                     >
                       <SunDim className="mr-2 h-4 w-4" />

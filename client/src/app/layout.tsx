@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
+import Sidebar from "@/components/Sidebar";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,12 +26,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex">
-            <div className="bg-red-400 w-[15%] ">
-              <Navbar />
+          <Providers>
+            <Sidebar />
+            <div className="max-w-6xl p-4 px-10 mx-auto bg-red-300">
+            {children}
             </div>
-            <div className="p-4">{children}</div>
-          </main>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

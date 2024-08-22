@@ -28,7 +28,7 @@ export default function RootLayout({
         >
           <Providers>
             <Sidebar />
-            <div className="max-w-6xl p-4 px-10 mx-auto bg-red-300">
+            <div className="max-w-6xl p-2 sm:p-4 sm:px-10 mx-auto ">
             {children}
             </div>
           </Providers>

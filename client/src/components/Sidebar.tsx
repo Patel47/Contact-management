@@ -9,15 +9,15 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
-  Link,
   Button,
 } from "@nextui-org/react";
 import { ModeToggle } from "./ModeToggle";
 import { Github } from "lucide-react";
 import Account from "./Account";
+import Link from "next/link";
 
 const Sidebar = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = ["HOME", "ABOUT", "CONTACT"];
 
@@ -25,6 +25,29 @@ const Sidebar = () => {
     <>
       <div className="bg-slate-600">
         <Navbar onMenuOpenChange={setIsMenuOpen}>
+          {/* MOBILE MENU */}
+          <NavbarMenu>
+            <NavbarMenuItem >
+              <Link className="w-full bg-red-500" href="/" onClick={() => setIsMenuOpen(false)}>
+                HOME
+              </Link>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem >
+              <Link className="w-full bg-red-500" href="/about" onClick={() => setIsMenuOpen(false)}>
+                ABOUT
+              </Link>
+            </NavbarMenuItem>
+
+            <NavbarMenuItem >
+              <Link className="w-full bg-red-500" href="/contact" onClick={() => setIsMenuOpen(false)}>
+                CONTACT
+              </Link>
+            </NavbarMenuItem>
+          </NavbarMenu>
+
+          {/* DESKTOP MENU */}
+
           <NavbarContent>
             <NavbarMenuToggle
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -39,7 +62,7 @@ const Sidebar = () => {
             <NavbarItem>
               <Link href="/">HOME</Link>
             </NavbarItem>
-            <NavbarItem >
+            <NavbarItem>
               <Link href="/about">ABOUT</Link>
             </NavbarItem>
             <NavbarItem>
@@ -59,26 +82,6 @@ const Sidebar = () => {
               <Account />
             </NavbarItem>
           </NavbarContent>
-          <NavbarMenu>
-            {menuItems.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  color={
-                    index === 2
-                      ? "primary"
-                      : index === menuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                  }
-                  className="w-full"
-                  href="#"
-                  size="lg"
-                >
-                  {item}
-                </Link>
-              </NavbarMenuItem>
-            ))}
-          </NavbarMenu>
         </Navbar>
       </div>
     </>

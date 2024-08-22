@@ -27,20 +27,32 @@ const Sidebar = () => {
         <Navbar onMenuOpenChange={setIsMenuOpen}>
           {/* MOBILE MENU */}
           <NavbarMenu>
-            <NavbarMenuItem >
-              <Link className="w-full bg-red-500" href="/" onClick={() => setIsMenuOpen(false)}>
+            <NavbarMenuItem>
+              <Link
+                className="w-full bg-red-500"
+                href="/"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 HOME
               </Link>
             </NavbarMenuItem>
 
-            <NavbarMenuItem >
-              <Link className="w-full bg-red-500" href="/about" onClick={() => setIsMenuOpen(false)}>
+            <NavbarMenuItem>
+              <Link
+                className="w-full bg-red-500"
+                href="/about"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 ABOUT
               </Link>
             </NavbarMenuItem>
 
-            <NavbarMenuItem >
-              <Link className="w-full bg-red-500" href="/contact" onClick={() => setIsMenuOpen(false)}>
+            <NavbarMenuItem>
+              <Link
+                className="w-full bg-red-500"
+                href="/contact"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 CONTACT
               </Link>
             </NavbarMenuItem>
@@ -54,7 +66,7 @@ const Sidebar = () => {
               className="sm:hidden"
             />
             <NavbarBrand>
-              <p className="font-bold text-inherit">ACME</p>
+              <p className="font-bold text-2xl">NexContact</p>
             </NavbarBrand>
           </NavbarContent>
 

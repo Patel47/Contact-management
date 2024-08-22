@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Sidebar from "@/components/Sidebar";
 import { Providers } from "./providers";
+import { Footer } from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
             <div className="max-w-6xl p-2 sm:p-4 sm:px-10 mx-auto ">
             {children}
             </div>
+            <Footer />
           </Providers>
         </ThemeProvider>
       </body>

@@ -29,11 +29,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            {/* <Sidebar /> */}
             <MenuBar child={children} />
-            {/* <div className="max-w-6xl p-2 sm:p-4 sm:px-10 mx-auto ">
-              {children}
-            </div> */}
+
             {/* <Footer /> */}
           </Providers>
         </ThemeProvider>

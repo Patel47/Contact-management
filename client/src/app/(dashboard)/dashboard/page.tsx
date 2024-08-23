@@ -18,7 +18,7 @@ const Dashboard = () => {
   return (
     <main className="flex flex-1 flex-col min-h-screen gap-4 p-2 lg:gap-6 lg:p-6 overflow-auto">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
+        <h1 className="text-lg font-semibold md:text-2xl">All Contacts</h1>
 
         <Dialog>
           <DialogTrigger>
@@ -26,7 +26,7 @@ const Dashboard = () => {
               <span>
                 <SquarePlus className="h-5 w-5" />
               </span>
-              Add Product
+              Add Contact
             </div>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
@@ -73,10 +73,10 @@ const Dashboard = () => {
       >
         <div className="flex flex-col items-center gap-1 text-center">
           <h3 className="text-2xl font-bold tracking-tight">
-            You have no products
+            You have no data
           </h3>
           <p className="text-sm text-muted-foreground">
-            You can start selling as soon as you add a product.
+            You can start managing contact as soon as you add a new contact.
           </p>
 
           <Dialog>
@@ -85,7 +85,7 @@ const Dashboard = () => {
                 <span>
                   <SquarePlus className="h-5 w-5" />
                 </span>
-                Add Product
+                Add Contact
               </div>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">

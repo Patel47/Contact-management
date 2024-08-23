@@ -21,7 +21,7 @@ const Account = () => {
       <div className="">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar>
+            <Avatar className="border-2 border-blue-600">
               <AvatarImage />
               <AvatarFallback>OM</AvatarFallback>
             </Avatar>

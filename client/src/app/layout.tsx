@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Sidebar from "@/components/Sidebar";
 import { Providers } from "./providers";
 import { Footer } from "@/components/Footer";
+import MenuBar from "@/components/MenuBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,11 +29,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Providers>
-            <Sidebar />
-            <div className="max-w-6xl p-2 sm:p-4 sm:px-10 mx-auto ">
-            {children}
-            </div>
-            <Footer />
+            {/* <Sidebar /> */}
+            <MenuBar child={children} />
+            {/* <div className="max-w-6xl p-2 sm:p-4 sm:px-10 mx-auto ">
+              {children}
+            </div> */}
+            {/* <Footer /> */}
           </Providers>
         </ThemeProvider>
       </body>

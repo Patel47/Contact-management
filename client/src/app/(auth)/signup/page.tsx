@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 
 export default function SignupForm() {
   return (
-    <div className="min-h-screen sm:min-h-full flex flex-col justify-center items-center bg-gray-200 dark:bg-zinc-900">
+    <div className="min-h-[95vh]  flex flex-col justify-center items-center bg-gray-200 dark:bg-zinc-900">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
           <CardTitle className="text-xl">Sign Up</CardTitle>

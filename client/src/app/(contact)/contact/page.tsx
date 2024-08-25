@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Image } from "@nextui-org/react";
 import { Send } from "lucide-react";
 import React from "react";
 
@@ -67,7 +68,8 @@ const page = () => {
                 </form>
               </div>
             </div>
-            <img
+            <Image
+              isZoomed
               alt="Contact us"
               className="hidden max-h-[80%] w-[80%] rounded-lg object-cover lg:block"
               src="https://images.unsplash.com/photo-1615840287214-7ff58936c4cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&h=800&q=80"

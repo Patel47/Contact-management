@@ -26,8 +26,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Account from "./Account";
+import { ModeToggle } from "./ModeToggle";
 
-export default function MenuBar({ child }: any) {
+export default function MenuBar({ children }: any) {
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ">
       <div className=" hidden border-r bg-muted/40 md:block ">
@@ -185,10 +186,19 @@ export default function MenuBar({ child }: any) {
           </div>
 
           {/* Dropdown in header */}
-          <Account />
+          <div className=" flex justify-center items-center gap-2">
+            <ModeToggle />
+            {false ? (
+              <Account />
+            ) : (
+              <Link href={"/signin"}>
+                <Button variant={"secondary"}>Login </Button>
+              </Link>
+            )}
+          </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-2 lg:gap-6 lg:p-6 overflow-auto">
-          <div className="">{child}</div>
+          <div className="">{children}</div>
         </main>
       </div>
     </div>

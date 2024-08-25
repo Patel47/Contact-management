@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Award,
@@ -27,8 +28,10 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Account from "./Account";
 import { ModeToggle } from "./ModeToggle";
+import { usePathname } from "next/navigation";
 
 export default function MenuBar({ children }: any) {
+  const pathName = usePathname();
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ">
       <div className=" hidden border-r bg-muted/40 md:block ">
@@ -47,14 +50,22 @@ export default function MenuBar({ children }: any) {
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
                 href="/"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                  pathName === "/"
+                    ? "bg-gray-300 dark:bg-muted"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
               >
                 <Home className="h-4 w-4" />
                 Home
               </Link>
               <Link
                 href="/about"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                  pathName === "/about"
+                    ? "bg-gray-300 dark:bg-muted"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
               >
                 <Award className="h-4 w-4" />
                 About Us
@@ -64,7 +75,11 @@ export default function MenuBar({ children }: any) {
               </Link>
               <Link
                 href="/contact"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                  pathName === "/contact"
+                    ? "bg-gray-300 dark:bg-muted"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
               >
                 <Phone className="h-4 w-4" />
                 Contact Us
@@ -72,7 +87,11 @@ export default function MenuBar({ children }: any) {
 
               <Link
                 href="/dashboard"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                  pathName === "/dashboard"
+                    ? "bg-gray-300 dark:bg-muted"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
               >
                 <LineChart className="h-4 w-4" />
                 Dashboard
@@ -104,7 +123,7 @@ export default function MenuBar({ children }: any) {
           <Sheet>
             <SheetTrigger asChild>
               <Button
-                variant="outline"
+                variant="secondary"
                 size="icon"
                 className="shrink-0 md:hidden"
               >
@@ -116,21 +135,29 @@ export default function MenuBar({ children }: any) {
               <nav className="grid gap-2 text-lg font-medium">
                 <Link
                   href="/"
-                  className="flex items-center gap-2 text-lg font-semibold"
+                  className="flex items-center gap-2 text-lg font-semibold  w-2/3"
                 >
                   <Package2 className="h-6 w-6" />
                   <span className=" ">NexContact</span>
                 </Link>
                 <Link
                   href="/"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    pathName === "/"
+                      ? "bg-gray-300 dark:bg-muted"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
                 >
                   <Home className="h-5 w-5" />
                   Home
                 </Link>
                 <Link
                   href="/about"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    pathName === "/about"
+                      ? "bg-gray-300 dark:bg-muted"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
                 >
                   <Award className="h-5 w-5" />
                   About Us
@@ -140,7 +167,11 @@ export default function MenuBar({ children }: any) {
                 </Link>
                 <Link
                   href="/contact"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    pathName === "/contact"
+                      ? "bg-gray-300 dark:bg-muted"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
                 >
                   <Phone className="h-5 w-5" />
                   Contact Us
@@ -148,7 +179,11 @@ export default function MenuBar({ children }: any) {
 
                 <Link
                   href="/dashboard"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    pathName === "/dashboard"
+                      ? "bg-gray-300 dark:bg-muted"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
                 >
                   <LineChart className="h-5 w-5" />
                   Dashboard

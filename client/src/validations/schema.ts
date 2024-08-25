@@ -23,4 +23,15 @@ const signupValidationSchema = Yup.object({
     .required("Password is required"),
 });
 
-export { signinValidationSchema, signupValidationSchema };
+const addNewContactSchema = Yup.object({
+  name: Yup.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be 50 characters or less")
+    .required("Name is required"),
+
+  mobile: Yup.string()
+    .matches(/^[0-9]{10}$/, "Mobile number must be exactly 10 digits")
+    .required("Mobile number is required"),
+});
+
+export { signinValidationSchema, signupValidationSchema, addNewContactSchema };

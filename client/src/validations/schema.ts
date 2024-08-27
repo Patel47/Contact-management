@@ -11,7 +11,7 @@ const signinValidationSchema = Yup.object({
 });
 
 const signupValidationSchema = Yup.object({
-  name: Yup.string()
+  username: Yup.string()
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be 50 characters or less")
     .required("Name is required"),

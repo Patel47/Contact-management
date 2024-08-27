@@ -17,17 +17,31 @@ import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
 import { signupValidationSchema } from "@/validations/schema";
 import { CircleAlert } from "lucide-react";
+import { signUp } from "@/services/apiService";
+import { useRouter } from "next/navigation";
+import useNotifications from "@/lib/notification";
 
 export default function SignupForm() {
+  const router = useRouter();
+  const { successNotification, errorNotification } = useNotifications();
+
   const formik = useFormik({
     initialValues: {
-      name: "",
+      username: "",
       email: "",
       password: "",
     },
     validationSchema: signupValidationSchema,
-    onSubmit: (values) => {
-      console.log("Form data", values);
+    onSubmit: async (values) => {
+      try {
+        const res = await signUp(values);
+        if (res.success) {
+          successNotification("Success", "User SignUp Seccessfully..!");
+          router.push("/signin");
+        }
+      } catch (error: any) {
+        errorNotification("Error", error.message);
+      }
     },
   });
 
@@ -44,17 +58,17 @@ export default function SignupForm() {
           <form onSubmit={formik.handleSubmit}>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="username">Name</Label>
                 <Input
-                  id="name"
+                  id="username"
                   placeholder="Max"
                   onChange={formik.handleChange}
-                  value={formik.values.name}
+                  value={formik.values.username}
                 />
-                {formik.touched.name && formik.errors.name ? (
+                {formik.touched.username && formik.errors.username ? (
                   <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
                     <CircleAlert size={16} />
-                    {formik.errors.name}
+                    {formik.errors.username}
                   </div>
                 ) : null}
               </div>

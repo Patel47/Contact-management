@@ -19,12 +19,13 @@ import { useRouter } from "next/navigation";
 import useNotifications from "@/lib/notification";
 import { createContact, getAllContacts } from "@/services/apiService";
 import DataTable from "@/components/DataTable";
+import SkeletonDemo from "@/components/SkeletonDemo";
 
 const Dashboard = () => {
   const router = useRouter();
   const { successNotification, errorNotification } = useNotifications();
   const [contacts, setContacts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -51,7 +52,6 @@ const Dashboard = () => {
   });
 
   const fetchData = async () => {
-    setLoading(true);
     try {
       const res = await getAllContacts();
       setContacts(res);
@@ -136,9 +136,17 @@ const Dashboard = () => {
         </Dialog>
       </div>
 
-      {/* Main Data */}
-      {contacts.length > 0 ? (
-        <div>{loading ? "Loading" : <DataTable contacts={contacts} />}</div>
+      {loading ? (
+        <div className=" sm:p-4 flex flex-col gap-4">
+          <SkeletonDemo />
+          <SkeletonDemo />
+          <SkeletonDemo />
+          <SkeletonDemo />
+        </div>
+      ) : contacts.length > 0 ? (
+        <div>
+          <DataTable contacts={contacts} />
+        </div>
       ) : (
         <div
           className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"

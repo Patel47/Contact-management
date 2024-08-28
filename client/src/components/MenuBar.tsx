@@ -95,17 +95,19 @@ export default function MenuBar({ children }: any) {
                 Contact Us
               </Link>
 
-              <Link
-                href="/dashboard"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                  pathName === "/dashboard"
-                    ? "bg-gray-300 dark:bg-muted"
-                    : "text-muted-foreground hover:text-primary"
-                }`}
-              >
-                <LineChart className="h-4 w-4" />
-                Dashboard
-              </Link>
+              {isAuthenticated && (
+                <Link
+                  href="/dashboard"
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    pathName === "/dashboard"
+                      ? "bg-gray-300 dark:bg-muted"
+                      : "text-muted-foreground hover:text-primary"
+                  }`}
+                >
+                  <LineChart className="h-4 w-4" />
+                  Dashboard
+                </Link>
+              )}
             </nav>
           </div>
           <div className="mt-auto p-4">
@@ -187,17 +189,19 @@ export default function MenuBar({ children }: any) {
                   Contact Us
                 </Link>
 
-                <Link
-                  href="/dashboard"
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                    pathName === "/dashboard"
-                      ? "bg-gray-300 dark:bg-muted"
-                      : "text-muted-foreground hover:text-primary"
-                  }`}
-                >
-                  <LineChart className="h-5 w-5" />
-                  Dashboard
-                </Link>
+                {isAuthenticated && (
+                  <Link
+                    href="/dashboard"
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                      pathName === "/dashboard"
+                        ? "bg-gray-300 dark:bg-muted"
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    <LineChart className="h-5 w-5" />
+                    Dashboard
+                  </Link>
+                )}
               </nav>
               <div className="mt-auto">
                 <Card>

@@ -36,7 +36,7 @@ export default function SigninForm() {
         const res = await signIn(values);
 
         if (res?.success) {
-          successNotification("Success", "User SignIn Seccessfully..!");
+          successNotification("Success", "User SignIn Successfully..!");
           resetForm();
           router.push("/dashboard");
         }

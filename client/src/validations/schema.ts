@@ -29,7 +29,7 @@ const addNewContactSchema = Yup.object({
     .max(50, "Name must be 50 characters or less")
     .required("Name is required"),
 
-  mobile: Yup.string()
+  phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Mobile number must be exactly 10 digits")
     .required("Mobile number is required"),
 });

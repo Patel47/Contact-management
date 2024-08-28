@@ -4,7 +4,7 @@ const contactSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         require: true,
-        ref: "User"
+        ref: "user"
     },
     name: {
         type: String,

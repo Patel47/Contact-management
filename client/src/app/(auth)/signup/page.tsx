@@ -36,7 +36,7 @@ export default function SignupForm() {
       try {
         const res = await signUp(values);
         if (res?.success) {
-          successNotification("Success", "User SignUp Seccessfully..!");
+          successNotification("Success", "User SignUp Successfully..!");
           resetForm();
           router.push("/signin");
         }

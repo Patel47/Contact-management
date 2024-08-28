@@ -8,12 +8,7 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import {
-  EllipsisVertical,
-  Eye,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { EllipsisVertical, Eye, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import getColorFromLetter from "@/services/getColorFromLetter";
 
 export default function DataTable({ contacts }: { contacts: any[] }) {
   return (
@@ -32,11 +28,18 @@ export default function DataTable({ contacts }: { contacts: any[] }) {
       </TableHeader>
       <TableBody emptyContent={"No rows to display."}>
         {contacts.map((contact: any, index) => {
+          const bgColor = getColorFromLetter(contact?.name.charAt(0));
+
           return (
             <TableRow key={index}>
               <TableCell className=" flex items-center gap-2">
                 <span>
-                  <Avatar className="border-2 border-blue-600 ">
+                  <Avatar
+                    className="border-2"
+                    style={{
+                      borderColor: bgColor,
+                    }}
+                  >
                     <AvatarImage />
                     <AvatarFallback>
                       {contact?.name.charAt(0).toUpperCase()}

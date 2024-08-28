@@ -137,7 +137,7 @@ const Dashboard = () => {
       </div>
 
       {/* Main Data */}
-      {contacts ? (
+      {contacts.length > 0 ? (
         <>
           {loading ? (
             "Loading"

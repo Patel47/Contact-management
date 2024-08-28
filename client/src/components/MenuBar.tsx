@@ -29,9 +29,19 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Account from "./Account";
 import { ModeToggle } from "./ModeToggle";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getCookie } from "@/services/apiService";
 
 export default function MenuBar({ children }: any) {
   const pathName = usePathname();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const token = getCookie("authToken");
+  useEffect(() => {
+    setIsAuthenticated(!!token);
+  }, [token]);
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ">
       <div className=" hidden border-r bg-muted/40 md:block ">
@@ -223,7 +233,7 @@ export default function MenuBar({ children }: any) {
           {/* Dropdown in header */}
           <div className=" flex justify-center items-center gap-2">
             <ModeToggle />
-            {false ? (
+            {isAuthenticated ? (
               <Account />
             ) : (
               <Link href={"/signin"}>

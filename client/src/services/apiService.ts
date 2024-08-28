@@ -15,7 +15,11 @@ function setCookie(name: any, value: any, days: number) {
 }
 
 // Function to get a cookie by name
-function getCookie(name: any) {
+export function getCookie(name: any) {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
   const nameEQ = name + "=";
   const ca = document.cookie.split(";");
   for (let i = 0; i < ca.length; i++) {
@@ -27,7 +31,10 @@ function getCookie(name: any) {
 }
 
 // Function to erase a cookie by name
-function eraseCookie(name: any) {
+export function eraseCookie(name: any) {
+  if (typeof document === "undefined") {
+    return null;
+  }
   document.cookie = name + "=; Max-Age=-99999999;";
 }
 

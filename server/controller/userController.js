@@ -57,7 +57,7 @@ const loginUser = asyncHandler(async (req, res) => {
       process.env.ACCESS_KEY,
       { expiresIn: "5d" }
     );
-    res.status(200).json({ access_token });
+    res.status(200).json({ success: "true", access_token });
   } else {
     res.status(401);
     throw new Error("Email or Password Invalid");

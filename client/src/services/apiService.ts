@@ -25,7 +25,6 @@ export async function signUp(userData: any) {
       `${API_BASE_URL}/user/register`,
       userData
     );
-    saveToken(response.data.token);
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Sign-up failed");
@@ -39,10 +38,9 @@ export async function signIn(credentials: any) {
       `${API_BASE_URL}/user/login`,
       credentials
     );
-    saveToken(response.data.token); // Save token if sign-in is successful
-    return response.data; // Return the response data from the server
+    saveToken(response.data.access_token);
+    return response.data;
   } catch (error: any) {
-    console.error("Sign-in error:", error);
     throw new Error(error.response?.data?.message || "Sign-in failed");
   }
 }
@@ -50,6 +48,9 @@ export async function signIn(credentials: any) {
 // Axios instance with token management
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Request interceptor to attach token to headers
@@ -72,7 +73,7 @@ apiClient.interceptors.response.use(
       // Handle unauthorized errors (e.g., token expiration)
       removeToken();
       // Redirect to login page or show error message
-      //   window.location.href = '/login';
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

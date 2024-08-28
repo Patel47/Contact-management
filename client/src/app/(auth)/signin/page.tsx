@@ -17,16 +17,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CircleAlert } from "lucide-react";
 import { signinValidationSchema } from "@/validations/schema";
+import { signIn } from "@/services/apiService";
+import { useRouter } from "next/navigation";
+import useNotifications from "@/lib/notification";
 
 export default function SigninForm() {
+  const router = useRouter();
+  const { successNotification, errorNotification } = useNotifications();
+
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
     validationSchema: signinValidationSchema,
-    onSubmit: (values) => {
-      console.log("Form data", values);
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const res = await signIn(values);
+
+        if (res?.success) {
+          successNotification("Success", "User SignIn Seccessfully..!");
+          resetForm();
+          router.push("/dashboard");
+        }
+      } catch (error: any) {
+        errorNotification("Error", error.message);
+      }
     },
   });
 

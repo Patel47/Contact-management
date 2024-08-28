@@ -32,11 +32,12 @@ export default function SignupForm() {
       password: "",
     },
     validationSchema: signupValidationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
         const res = await signUp(values);
-        if (res.success) {
+        if (res?.success) {
           successNotification("Success", "User SignUp Seccessfully..!");
+          resetForm();
           router.push("/signin");
         }
       } catch (error: any) {

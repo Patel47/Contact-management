@@ -18,7 +18,7 @@ import { addNewContactSchema } from "@/validations/schema";
 import { useRouter } from "next/navigation";
 import useNotifications from "@/lib/notification";
 import { createContact, getAllContacts } from "@/services/apiService";
-import { GetServerSideProps } from "next";
+import DataTable from "@/components/DataTable";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -138,23 +138,7 @@ const Dashboard = () => {
 
       {/* Main Data */}
       {contacts.length > 0 ? (
-        <>
-          {loading ? (
-            "Loading"
-          ) : (
-            <div>
-              {contacts.map((contact: any, index) => {
-                return (
-                  <div key={index}>
-                    <h1>
-                      {contact.name} {contact.phone}
-                    </h1>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </>
+        <div>{loading ? "Loading" : <DataTable contacts={contacts} />}</div>
       ) : (
         <div
           className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"

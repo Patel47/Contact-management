@@ -32,7 +32,7 @@ const Dashboard = () => {
       phone: "",
     },
     validationSchema: addNewContactSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
         const res = await createContact(values);
 
@@ -41,6 +41,7 @@ const Dashboard = () => {
             "Success",
             "New mobile number added Successfully..!"
           );
+          resetForm();
           fetchData();
         }
       } catch (error: any) {
@@ -54,7 +55,6 @@ const Dashboard = () => {
     try {
       const res = await getAllContacts();
       setContacts(res);
-      console.log(res);
       setLoading(false);
     } catch (error: any) {
       errorNotification("Error", error.message);

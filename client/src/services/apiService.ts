@@ -3,19 +3,47 @@ import axios from "axios";
 // Base URL for your API (adjust as needed)
 const API_BASE_URL = "http://localhost:5001/api";
 
-// Function to save the token in local storage
-export function saveToken(token: string) {
-  localStorage.setItem("authToken", token);
+// Function to set a cookie
+function setCookie(name: any, value: any, days: number) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
-// Function to get the token from local storage
+// Function to get a cookie by name
+function getCookie(name: any) {
+  const nameEQ = name + "=";
+  const ca = document.cookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === " ") c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+// Function to erase a cookie by name
+function eraseCookie(name: any) {
+  document.cookie = name + "=; Max-Age=-99999999;";
+}
+
+// Function to save the token in a cookie
+export function saveToken(token: any) {
+  setCookie("authToken", token, 1); // Cookie expires in 7 days
+}
+
+// Function to get the token from the cookie
 export function getToken() {
-  return localStorage.getItem("authToken");
+  return getCookie("authToken");
 }
 
-// Function to remove the token from local storage
+// Function to remove the token from the cookie
 export function removeToken() {
-  localStorage.removeItem("authToken");
+  eraseCookie("authToken");
 }
 
 // Function to sign up a new user
@@ -73,7 +101,7 @@ apiClient.interceptors.response.use(
       // Handle unauthorized errors (e.g., token expiration)
       removeToken();
       // Redirect to login page or show error message
-      window.location.href = "/login";
+      window.location.href = "/signin";
     }
     return Promise.reject(error);
   }

@@ -131,6 +131,16 @@ const handleError = (error: any) => {
   }
 };
 
+// Function to fetch current user
+export async function currentUser() {
+  try {
+    const response = await apiClient.get("/user/current");
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Request failed");
+  }
+}
+
 // Get all contacts
 export const getAllContacts = async () => {
   try {

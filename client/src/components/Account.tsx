@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { LogOut, Moon, SunDim, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -12,10 +11,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import { eraseCookie, getCookie } from "@/services/apiService";
+import { currentUser, eraseCookie, getCookie } from "@/services/apiService";
+import { useEffect, useState } from "react";
 
 const Account = () => {
   const { theme, setTheme } = useTheme();
+  const [user, setUser] = useState<{ username: string } | null>(null);
+
+  const current = async () => {
+    try {
+      const res = await currentUser();
+      setUser(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    current();
+  }, []);
 
   return (
     <>
@@ -24,7 +38,9 @@ const Account = () => {
           <DropdownMenuTrigger>
             <Avatar className="border-2 border-blue-600">
               <AvatarImage />
-              <AvatarFallback>OM</AvatarFallback>
+              <AvatarFallback>
+                {user?.username.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">

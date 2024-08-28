@@ -30,7 +30,7 @@ import Account from "./Account";
 import { ModeToggle } from "./ModeToggle";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCookie } from "@/services/apiService";
+import { currentUser, getCookie } from "@/services/apiService";
 
 export default function MenuBar({ children }: any) {
   const pathName = usePathname();

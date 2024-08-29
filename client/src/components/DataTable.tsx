@@ -17,8 +17,16 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import getColorFromLetter from "@/services/getColorFromLetter";
+import { deleteContact } from "@/services/apiService";
+import useNotifications from "@/lib/notification";
 
-export default function DataTable({ contacts }: { contacts: any[] }) {
+export default function DataTable({
+  contacts,
+  handleDelete,
+}: {
+  contacts: any[];
+  handleDelete: (id: string) => void;
+}) {
   return (
     <Table selectionMode="single" aria-label="Example empty table">
       <TableHeader>
@@ -65,7 +73,12 @@ export default function DataTable({ contacts }: { contacts: any[] }) {
                           <Pencil className="mr-2 h-4 w-4" />
                           <span>Update</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500">
+                        <DropdownMenuItem
+                          className="text-red-500"
+                          onClick={() => {
+                            handleDelete(contact._id);
+                          }}
+                        >
                           <Trash2 className="mr-2 h-4 w-4" />
                           <span>Delete</span>
                         </DropdownMenuItem>

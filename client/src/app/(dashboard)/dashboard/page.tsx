@@ -15,14 +15,16 @@ import { Input } from "@/components/ui/input";
 import { CircleAlert, SquarePlus } from "lucide-react";
 import { useFormik } from "formik";
 import { addNewContactSchema } from "@/validations/schema";
-import { useRouter } from "next/navigation";
 import useNotifications from "@/lib/notification";
-import { createContact, getAllContacts } from "@/services/apiService";
+import {
+  createContact,
+  deleteContact,
+  getAllContacts,
+} from "@/services/apiService";
 import DataTable from "@/components/DataTable";
 import SkeletonDemo from "@/components/SkeletonDemo";
 
 const Dashboard = () => {
-  const router = useRouter();
   const { successNotification, errorNotification } = useNotifications();
   const [contacts, setContacts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,13 +53,27 @@ const Dashboard = () => {
     },
   });
 
+  const handleDelete = async (contactId: any) => {
+    try {
+      const res = await deleteContact(contactId);
+      if (res.success) {
+        successNotification("Success", "Mobile Number Deleted Successfully..!");
+        fetchData();
+      }
+    } catch (error: any) {
+      errorNotification("Error", error.message);
+    }
+  };
+
   const fetchData = async () => {
     try {
       const res = await getAllContacts();
+
       setContacts(res);
       setLoading(false);
     } catch (error: any) {
-      errorNotification("Error", error.message);
+      // errorNotification("Error", error.message);
+      setLoading(false);
     }
   };
 
@@ -145,7 +161,7 @@ const Dashboard = () => {
         </div>
       ) : contacts.length > 0 ? (
         <div>
-          <DataTable contacts={contacts} />
+          <DataTable contacts={contacts} handleDelete={handleDelete} />
         </div>
       ) : (
         <div

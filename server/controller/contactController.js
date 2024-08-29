@@ -5,7 +5,7 @@ const getAllContact = asyncHandler(async (req, res) => {
   const data = await Contact.find({ user_id: req.user.id });
   if (data.length <= 0) {
     res.status(400);
-    throw new Error("No data found");
+    // throw new Error("No data found");
   }
 
   res.status(200).json(data);
@@ -70,7 +70,7 @@ const deleteContact = asyncHandler(async (req, res) => {
   }
 
   await Contact.deleteOne({ _id: req.params.id });
-  res.status(200).json({ data });
+  res.status(200).json({ success: "true", data });
 });
 
 module.exports = {

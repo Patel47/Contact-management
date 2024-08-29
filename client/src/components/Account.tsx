@@ -13,10 +13,11 @@ import {
 import { useTheme } from "next-themes";
 import { currentUser, eraseCookie, getCookie } from "@/services/apiService";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const Account = () => {
   const { theme, setTheme } = useTheme();
-  const [user, setUser] = useState<{ username: string } | null>(null);
+  const [user, setUser] = useState<{ username: any; id: any } | null>(null);
 
   const current = async () => {
     try {
@@ -47,12 +48,14 @@ const Account = () => {
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
+              <Link href={`/profile/${user?.id}`}>
+                <DropdownMenuItem className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              </Link>
 
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 {theme == "light" ? (
                   <div
                     className="flex items-center w-full"
@@ -75,11 +78,12 @@ const Account = () => {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
+              className="cursor-pointer "
               onClick={() => {
                 eraseCookie("authToken"), window.location.reload();
               }}
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-4 w-4 text-red-500" />
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

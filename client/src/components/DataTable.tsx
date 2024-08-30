@@ -8,25 +8,89 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { EllipsisVertical, Eye, Pencil, Trash2 } from "lucide-react";
+import { CircleAlert, Pencil, Trash2 } from "lucide-react";
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import getColorFromLetter from "@/services/getColorFromLetter";
-import { deleteContact } from "@/services/apiService";
+import {
+  deleteContact,
+  getContact,
+  updateContact,
+} from "@/services/apiService";
 import useNotifications from "@/lib/notification";
+import { addNewContactSchema } from "@/validations/schema";
+import { useFormik } from "formik";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export default function DataTable({
   contacts,
-  handleDelete,
+  fetchData,
 }: {
   contacts: any[];
-  handleDelete: (id: string) => void;
+  fetchData: () => void;
 }) {
+  const { successNotification, errorNotification } = useNotifications();
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      phone: "",
+    },
+    validationSchema: addNewContactSchema,
+    onSubmit: async (values, { resetForm }) => {
+      console.log(values);
+    },
+  });
+
+  const fetchContact = async (contactId: any) => {
+    try {
+      const res = await getContact(contactId);
+      formik.setValues({
+        name: res.data.name || "",
+        phone: res.data.phone || "",
+      });
+    } catch (error: any) {
+      errorNotification("Error", error.message);
+    }
+  };
+
+  const handleUpdate = async (contactId: any) => {
+    try {
+      const res = await updateContact(contactId, {
+        name: formik.values.name,
+        phone: formik.values.phone,
+      });
+      if (res.success) {
+        successNotification("Success", "Mobile Number Updated Successfully..!");
+        fetchData();
+      }
+    } catch (error: any) {
+      errorNotification("Error", error.message);
+    }
+  };
+
+  const handleDelete = async (contactId: any) => {
+    try {
+      const res = await deleteContact(contactId);
+      if (res.success) {
+        successNotification("Success", "Mobile Number Deleted Successfully..!");
+        fetchData();
+      }
+    } catch (error: any) {
+      errorNotification("Error", error.message);
+    }
+  };
+
   return (
     <Table selectionMode="single" aria-label="Example empty table">
       <TableHeader>
@@ -57,34 +121,86 @@ export default function DataTable({
                 <span className="tracking-wider">{contact.name}</span>
               </TableCell>
               <TableCell className="tracking-wide">{contact.phone}</TableCell>
-              <TableCell className=" pl-6">
-                <div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <EllipsisVertical />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-24">
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem>
-                          <Eye className="mr-2 h-4 w-4" />
-                          <span>Details</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          <span>Update</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-red-500"
-                          onClick={() => {
-                            handleDelete(contact._id);
-                          }}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+              <TableCell className="">
+                <div className="flex   items-center gap-4">
+                  <Dialog>
+                    <DialogTrigger>
+                      <div className="text-green-500  p-1">
+                        <Pencil
+                          onClick={() => fetchContact(contact._id)}
+                          className=" h-6 w-6"
+                        />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Add New Contact</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your list here. Click save when you're
+                          done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form
+                        onSubmit={async (event) => {
+                          event.preventDefault();
+                          await handleUpdate(contact._id);
+                        }}
+                      >
+                        <div className="grid gap-4 py-4">
+                          <div className="flex flex-col gap-2">
+                            <Label htmlFor="name" className="">
+                              Name
+                            </Label>
+                            <Input
+                              id="name"
+                              placeholder="Pedro Duarte"
+                              className="col-span-3 placeholder:text-gray-600"
+                              autoComplete="off"
+                              onChange={formik.handleChange}
+                              value={formik.values.name}
+                            />
+                            {formik.touched.name && formik.errors.name ? (
+                              <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
+                                <CircleAlert size={16} />
+                                {formik.errors.name}
+                              </div>
+                            ) : null}
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <Label htmlFor="phone" className="">
+                              Contact Number
+                            </Label>
+                            <Input
+                              type="number"
+                              id="phone"
+                              placeholder="9789789567"
+                              className="col-span-3 placeholder:text-gray-600"
+                              autoComplete="off"
+                              onChange={formik.handleChange}
+                              value={formik.values.phone}
+                            />
+                            {formik.touched.phone && formik.errors.phone ? (
+                              <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
+                                <CircleAlert size={16} />
+                                {formik.errors.phone}
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="submit">Update Contact</Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                  <div
+                    className="text-red-500 cursor-pointer p-1"
+                    onClick={() => {
+                      handleDelete(contact._id);
+                    }}
+                  >
+                    <Trash2 className=" h-6 w-6" />
+                  </div>
                 </div>
               </TableCell>
             </TableRow>

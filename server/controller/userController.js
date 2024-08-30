@@ -2,70 +2,428 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
+const sendOTPMail = require("../utils/sendOTP");
+const otpModel = require("../model/otpModel");
+const refreshTokenModel = require("../model/refreshTokenModel");
+const generateTokens = require("../utils/generateTokens");
+const setTokenCookies = require("../utils/setTokenCookies");
+const refreshAccessToken = require("../utils/refreshAccessToken");
+const transporter = require("../config/emailConfig");
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) {
-    res.status(400);
-    throw new Error("All field are required");
+// user registration
+const userRegistration = async (req, res) => {
+  try {
+    // Extract request body parameters
+    const { username, email, password, password_confirmation } = req.body;
+
+    // check if all require fields are provided
+    if (!username || !email || !password || !password_confirmation) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "All fields are require" });
+    }
+
+    // check if password and password_confirmation is matched
+    if (password !== password_confirmation) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Password and Confirm password don't match",
+      });
+    }
+
+    // check if user already exist
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ status: "failed", message: "Email already exists" });
+    }
+
+    // generating salt
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
+    // creating new user
+    const newUser = await User.create({
+      username,
+      email,
+      password: hash,
+    });
+
+    sendOTPMail(req, newUser);
+
+    res.status(201).json({
+      status: "success",
+      message: "Registration Successfull",
+      user: { id: newUser._id, email: newUser.email },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to Register, Please try again later",
+    });
   }
+};
 
-  const availableUser = await User.findOne({ email });
+// user email verification
+const verifyEmail = async (req, res) => {
+  try {
+    // fatch data from req.body
+    const { email, otp } = req.body;
 
-  if (availableUser) {
-    res.status(400);
-    throw new Error("User Already Exist..!");
+    if (!email || !otp) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "All fields are require" });
+    }
+
+    // find user by email
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "Email doesn't exists" });
+    }
+
+    // check if user is already varified or not
+    if (existingUser.is_varified) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "Email is already verified" });
+    }
+
+    // check both user and otp are present or not
+    const emailVerification = await otpModel.findOne({
+      userId: existingUser._id,
+      otp,
+    });
+
+    if (emailVerification) {
+      // check if otp expired
+      const currentTime = new Date();
+
+      const expireTime = new Date(
+        emailVerification.createdAt.getTime() + 15 * 60 * 1000
+      );
+
+      if (currentTime > expireTime) {
+        await sendOTPMail(req, existingUser);
+
+        return res.status(400).json({
+          status: "failed",
+          message: "OTP expired, new OTP sent to your email",
+        });
+      }
+    }
+
+    if (!emailVerification) {
+      // check if user is already verified or not if not then resend the otp
+      if (!existingUser.is_varified) {
+        await sendOTPMail(req, existingUser);
+        return res.status(400).json({
+          status: "failed",
+          message: "Invalid OTP, new OTP send to your email",
+        });
+      }
+
+      // it means user is present and have the otp but entering wrong otp
+      return res.status(400).json({ status: "failed", message: "Invalid OTP" });
+    }
+
+    // now otp is valid and not expired
+    existingUser.is_varified = true;
+    await existingUser.save();
+
+    // also delete email varification document
+    await otpModel.deleteMany({ userId: existingUser._id });
+
+    return res
+      .status(200)
+      .json({ status: "success", message: "Email verified successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to verify Email, Please try again later",
+    });
   }
+};
 
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(password, salt);
+// user login
+const userLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  const newUser = await User.create({
-    username,
-    email,
-    password: hash,
-  });
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "All fields are require" });
+    }
 
-  if (newUser) {
-    res.status(201);
-    res.json({ success: "true", newUser });
-  } else {
-    res.status(400);
-    throw new Error("User data is not valid");
-  }
-});
+    const user = await User.findOne({ email });
 
-const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "Invalid email or password" });
+    }
 
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("All fields are require");
-  }
+    if (!user.is_varified) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "Your account is not verified" });
+    }
 
-  const user = await User.findOne({ email });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ status: "failed", message: "Invalid email or password" });
+    }
 
-  if (user && bcrypt.compareSync(password, user.password)) {
-    const access_token = jwt.sign(
-      {
-        user: {
-          username: user.username,
-          email: user.email,
-          id: user.id,
-        },
-      },
-      process.env.ACCESS_KEY,
-      { expiresIn: "1d" }
+    // generate refresh token and access token
+    const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } =
+      await generateTokens(user);
+
+    // set all tokens into cookies
+    setTokenCookies(
+      res,
+      accessToken,
+      refreshToken,
+      accessTokenExp,
+      refreshTokenExp
     );
-    res.status(200).json({ success: "true", access_token });
-  } else {
-    res.status(401);
-    throw new Error("Email or Password Invalid");
+
+    // send success response with tokens
+    res.status(200).json({
+      user: { userId: user._id, email: user.email, name: user.username },
+      status: "success",
+      message: "Login successfull",
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      access_token_exp: accessTokenExp,
+      is_auth: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to Login, Please try again later",
+    });
   }
-});
+};
 
-const currentUser = asyncHandler(async (req, res) => {
-  res.json(req.user);
-});
+// get new Access token or refresh token
+const getNewAccessToken = async (req, res) => {
+  try {
+    const { accessToken, refreshToken, accessTokenExp, refreshTokenExp } =
+      await refreshAccessToken(req, res);
 
-module.exports = { registerUser, loginUser, currentUser };
+    setTokenCookies(
+      res,
+      accessToken,
+      refreshToken,
+      accessTokenExp,
+      refreshTokenExp
+    );
+
+    res.status(200).send({
+      status: "Success",
+      message: "New tokens generated",
+      accessToken,
+      refreshToken,
+      accessTokenExp,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Invalid refreshToken, Please try again later",
+    });
+  }
+};
+
+// const currentUser = asyncHandler(async (req, res) => {
+//   res.json(req.user);
+// });
+
+const userProfile = async (req, res) => {
+  res.send({ user: req.user });
+};
+
+// change password
+const changePassword = async (req, res) => {
+  try {
+    const { password, password_confirmation } = req.body;
+
+    if (!password || !password_confirmation) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "All fields are require" });
+    }
+
+    // check if password and password_confirmation is matched
+    if (password !== password_confirmation) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Password and Confirm password don't match",
+      });
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
+    await User.findByIdAndUpdate(req.user._id, {
+      $set: { password: hash },
+    });
+
+    res.status(201).json({
+      status: "success",
+      message: "Password changed Successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to change password, Please try again later",
+    });
+  }
+};
+
+// send password reset email
+const sendPasswordResetEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "All fields are require" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "Email Doesn't exist" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.ACCESS_KEY, {
+      expiresIn: "15m",
+    });
+
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: user.email,
+      subject: "Password reset link",
+      html: `<p>Dear ${user.name}</p>
+              <p>click on this<a>http://localhost:5001/api/user/reset-password/${user._id}/${token}</a> link to reset password</p>`,
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Password reset mail sent, Please check your mail",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to send an email, Please try again later",
+    });
+  }
+};
+
+// password reset
+const passwordReset = async (req, res) => {
+  try {
+    const { id, token } = req.params;
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "user not found" });
+    }
+
+    jwt.verify(token, process.env.ACCESS_KEY);
+
+    const { password, password_confirmation } = req.body;
+
+    if (!password || !password_confirmation) {
+      return res
+        .status(400)
+        .json({ status: "failed", message: "All fields are require" });
+    }
+
+    // check if password and password_confirmation is matched
+    if (password !== password_confirmation) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Password and Confirm password don't match",
+      });
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
+    await User.findByIdAndUpdate(user._id, {
+      $set: { password: hash },
+    });
+
+    res.status(201).json({
+      status: "success",
+      message: "Password reset Successfully",
+    });
+  } catch (error) {
+    if (error.name == "TokenExpiredError") {
+      return res.status(400).json({
+        status: "failed",
+        message: "Token Expired, please request new password reset link",
+      });
+    }
+
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to reset password, Please try again later",
+    });
+  }
+};
+
+// logout
+const userLogout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    await refreshTokenModel.findOneAndUpdate(
+      { token: refreshToken },
+      { $set: { blacklisted: true } }
+    );
+
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.clearCookie("is_auth");
+
+    res.status(200).json({ status: "success", message: "logout successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: "failed",
+      message: "Unable to logout, Please try again later",
+    });
+  }
+};
+
+module.exports = {
+  userRegistration,
+  userLogin,
+  userProfile,
+  verifyEmail,
+  getNewAccessToken,
+  changePassword,
+  sendPasswordResetEmail,
+  passwordReset,
+  userLogout,
+};

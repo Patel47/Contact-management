@@ -5,8 +5,10 @@ const contactRoute = require("./route/contactRoute");
 const userRoute = require("./route/userRoute");
 const errorHandler = require("./middleware/errorHandler");
 const connectDb = require("./config/connectDb");
+const cookieParser = require("cookie-parser");
 
 const app = express();
+app.use(cookieParser());
 
 connectDb();
 app.use(express.json());

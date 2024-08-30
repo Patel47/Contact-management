@@ -53,22 +53,9 @@ const Dashboard = () => {
     },
   });
 
-  const handleDelete = async (contactId: any) => {
-    try {
-      const res = await deleteContact(contactId);
-      if (res.success) {
-        successNotification("Success", "Mobile Number Deleted Successfully..!");
-        fetchData();
-      }
-    } catch (error: any) {
-      errorNotification("Error", error.message);
-    }
-  };
-
   const fetchData = async () => {
     try {
       const res = await getAllContacts();
-
       setContacts(res);
       setLoading(false);
     } catch (error: any) {
@@ -161,7 +148,7 @@ const Dashboard = () => {
         </div>
       ) : contacts.length > 0 ? (
         <div>
-          <DataTable contacts={contacts} handleDelete={handleDelete} />
+          <DataTable contacts={contacts} fetchData={fetchData} />
         </div>
       ) : (
         <div

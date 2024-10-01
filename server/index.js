@@ -10,6 +10,8 @@ const cookieParser = require("cookie-parser");
 const app = express();
 app.use(cookieParser());
 
+// adding comment for testing
+
 connectDb();
 app.use(express.json());
 app.use(cors());
